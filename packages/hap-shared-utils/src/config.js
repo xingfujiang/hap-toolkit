@@ -19,6 +19,10 @@ export default {
   dataCoverage: './.nyc_output', // 项目运行的代码覆盖率数据
   command: 'build',
   server: { port: 8000 },
+  // 生成的 rpk 的文件名
+  distFile: '',
+  // 生成的 rpk 的路径
+  distName: '',
   // 代码风格规则
   isSmartMode: false,
   // 记录 watch 模式下哪些 .ux 文件对应的 .js 文件改变了

@@ -192,6 +192,8 @@ function generateDistFile(buffer, options, watch, distExt) {
   const distName = getDistFilename(options, distExt)
   const distFile = path.join(options.output, distName)
   fs.writeFileSync(distFile, buffer)
+  globalConfig.distName = distName
+  globalConfig.distFile = distFile
   colorconsole.log(`### App Loader ### 项目构建并生成文件：${distName}`)
 }
 

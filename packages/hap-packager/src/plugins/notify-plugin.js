@@ -5,6 +5,8 @@
 
 import http from 'http'
 import fs from 'fs'
+import cp from 'child_process'
+import _ from 'lodash'
 import {
   colorconsole,
   getDeviceInfo,
@@ -45,6 +47,43 @@ function sendUpdateReq(client) {
   req.end()
 }
 
+function notifyCloud() {
+  try {
+    console.log(`notifyCloud`)
+    // res List of devices attached or
+    // res List of devices attached
+    // val-vclinner-rt-contest.vivo.com.cn:26013	device
+    const resStr = cp.execSync(`adb devices`).toString().trim()
+    console.log(`adb devices result\n`, resStr)
+    const matchedOffline = resStr.match(/^(.+)?\boffline$/gm)
+    if (matchedOffline) {
+      const deviceId = matchedOffline[0].split('\t')[0]
+      if (deviceId.match('vivo.com')) {
+        cp.execSync(`adb connect ${deviceId}`)
+      }
+    }
+    const matched = resStr.match(/^(.+)?\bdevice$/gm)
+    // mm.match(/^(.+)?\bdevice$/)[0].split('\t')[0]
+    console.log(`matched`, matched)
+    if (matched) {
+      cp.execSync(`adb shell locksettings set-disabled true`)
+      cp.execSync(`adb shell settings put system screen_off_timeout 10*60*1000`)
+      const { distName, distFile } = globalConfig
+      // val-vclinner-rt-contest.vivo.com.cn:26013
+      const deviceId = matched[0].split('\t')[0]
+      // console.log(`deviceId`, deviceId)
+      const pushCmd = `adb -s ${deviceId} push ${distFile}  /data/local/tmp/`
+      const updateCmd = `adb shell am start -n com.vivo.hybrid.sdkdemo/org.hapjs.debugger.MainActivity --es rpk_address "/data/local/tmp/${distName}"`
+      // console.log(`pushCmd`, pushCmd)
+      // console.log(`updateCmd`, updateCmd)
+      cp.execSync(pushCmd)
+      cp.execSync(updateCmd)
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 function notify() {
   const clientRecordPath = globalConfig.clientRecordPath
   if (fs.existsSync(clientRecordPath)) {
@@ -74,6 +113,8 @@ function notify() {
   if (!clientExists) {
     colorconsole.log(`### App Server ### 没有记录手机地址，不会通知手机更新rpk文件`)
   }
+  _.debounce(notifyCloud, 100)()
+  // setTimeout(notifyCloud, 100);
 }
 
 function NotifyPlugin(options) {
