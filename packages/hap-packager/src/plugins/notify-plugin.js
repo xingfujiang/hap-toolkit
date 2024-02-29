@@ -74,7 +74,7 @@ function notifyCloud() {
       // console.log(`deviceId`, deviceId)
       const pushCmd = `adb -s ${deviceId} push ${distFile}  /data/local/tmp/`
       const updateCmd = `adb shell am start -n com.vivo.hybrid.sdkdemo/org.hapjs.debugger.MainActivity --es rpk_address "/data/local/tmp/${distName}"`
-      const updateCmdVivo = `adb shell am start -n corg.hapjs.debugger/org.hapjs.debugger.HybridMainActivity --es rpk_address "/data/local/tmp/${distName}"`
+      const updateCmdVivo = `adb shell am start -n org.hapjs.debugger/org.hapjs.debugger.HybridMainActivity --es rpk_address "/data/local/tmp/${distName}"`
       // console.log(`pushCmd`, pushCmd)
       // console.log(`updateCmd`, updateCmd)
       // console.log(`updateCmdVivo`, updateCmdVivo)
