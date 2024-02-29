@@ -74,10 +74,13 @@ function notifyCloud() {
       // console.log(`deviceId`, deviceId)
       const pushCmd = `adb -s ${deviceId} push ${distFile}  /data/local/tmp/`
       const updateCmd = `adb shell am start -n com.vivo.hybrid.sdkdemo/org.hapjs.debugger.MainActivity --es rpk_address "/data/local/tmp/${distName}"`
+      const updateCmdVivo = `adb shell am start -n corg.hapjs.debugger/org.hapjs.debugger.HybridMainActivity --es rpk_address "/data/local/tmp/${distName}"`
       // console.log(`pushCmd`, pushCmd)
       // console.log(`updateCmd`, updateCmd)
+      // console.log(`updateCmdVivo`, updateCmdVivo)
       cp.execSync(pushCmd)
       cp.execSync(updateCmd)
+      cp.execSync(updateCmdVivo)
     }
   } catch (error) {
     console.log(error)
@@ -113,7 +116,7 @@ function notify() {
   if (!clientExists) {
     colorconsole.log(`### App Server ### 没有记录手机地址，不会通知手机更新rpk文件`)
   }
-  _.debounce(notifyCloud, 100)()
+  _.debounce(notifyCloud, 300)()
   // setTimeout(notifyCloud, 100);
 }
 

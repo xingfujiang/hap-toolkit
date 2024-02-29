@@ -278,6 +278,7 @@ export default async function genWebpackConf(launchOptions, mode) {
       assets: false
     },
     optimization: {
+      nodeEnv:false,
       // 设置抽取公共js, 当前仅smart模式才启用
       splitChunks: globalConfig.isSmartMode
         ? {
