@@ -51,8 +51,9 @@ function notifyCloud() {
   try {
     console.log(`notifyCloud`)
     // res List of devices attached or
-    // res List of devices attached
-    // val-vclinner-rt-contest.vivo.com.cn:26013	device
+    // List of devices attached
+    // 10AD5P0XAP002DU	device
+    // val-vclinner-rt-contest.vivo.com.cn:25009	device
     const resStr = cp.execSync(`adb devices`).toString().trim()
     console.log(`adb devices result\n`, resStr)
     const matchedOffline = resStr.match(/^(.+)?\boffline$/gm)
@@ -66,21 +67,27 @@ function notifyCloud() {
     // mm.match(/^(.+)?\bdevice$/)[0].split('\t')[0]
     console.log(`matched`, matched)
     if (matched) {
-      cp.execSync(`adb shell locksettings set-disabled true`)
-      cp.execSync(`adb shell settings put system screen_off_timeout 10*60*1000`)
+      // 设置不锁屏和屏幕常亮
+      // cp.execSync(`adb shell locksettings set-disabled true`)
+      // cp.execSync(`adb shell settings put system screen_off_timeout 10*60*1000`)
       const { distName, distFile } = globalConfig
       // val-vclinner-rt-contest.vivo.com.cn:26013
-      const deviceId = matched[0].split('\t')[0]
-      // console.log(`deviceId`, deviceId)
+      const deviceId = matched
+        .filter((m) => m.match(/vivo\.com\.cn:/))
+        .map((m) => m.split('\t')[0])[0]
+      console.log(`deviceId`, deviceId)
+      if (!deviceId) return
+      // .vivo.com.cn:
+      // if (!deviceId.match(/vivo\.com\.cn:/)) return
       const pushCmd = `adb -s ${deviceId} push ${distFile}  /data/local/tmp/`
-      const updateCmd = `adb shell am start -n com.vivo.hybrid.sdkdemo/org.hapjs.debugger.MainActivity --es rpk_address "/data/local/tmp/${distName}"`
-      const updateCmdVivo = `adb shell am start -n org.hapjs.debugger/org.hapjs.debugger.HybridMainActivity --es rpk_address "/data/local/tmp/${distName}"`
+      const updateCmd = `adb -s ${deviceId} shell am start -n com.vivo.hybrid.sdkdemo/org.hapjs.debugger.MainActivity --es rpk_address "/data/local/tmp/${distName}"`
+      // const updateCmdVivo = `adb shell am start -n org.hapjs.debugger/org.hapjs.debugger.HybridMainActivity --es rpk_address "/data/local/tmp/${distName}"`
       // console.log(`pushCmd`, pushCmd)
       // console.log(`updateCmd`, updateCmd)
       // console.log(`updateCmdVivo`, updateCmdVivo)
       cp.execSync(pushCmd)
       cp.execSync(updateCmd)
-      cp.execSync(updateCmdVivo)
+      // cp.execSync(updateCmdVivo)
     }
   } catch (error) {
     console.log(error)
