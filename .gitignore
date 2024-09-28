@@ -24,3 +24,7 @@ scripts
 dist*
 
 workspace.code-workspace
+
+multi-device-interface.zip
+
+dev-docs.zip
